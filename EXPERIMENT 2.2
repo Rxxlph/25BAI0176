@@ -1,0 +1,41 @@
+import pandas as pd
+import numpy as np
+
+data = np.arange(15).reshape((3,5))
+indexers = ['Rainfall', 'Humidity', 'Wind']
+dframe1 = pd.DataFrame(data, index=indexers, columns=['Bergen', 'Oslo', 'Trondheim', 'Stavanger', 'Kristiansand'])
+print(dframe1)
+
+stacked = dframe1.stack()
+print(stacked)
+ 
+stacked.unstack()
+ 
+series1 = pd.Series([000, 111, 222, 333], index=['zeros','ones', 'twos', 'threes'])
+series2 = pd.Series([444, 555, 666], index=['fours', 'fives', 'sixs'])
+
+frame2 = pd.concat([series1, series2], keys=['Number1', 'Number2'])
+frame2.unstack()
+
+
+output
+   Bergen  Oslo  Trondheim  Stavanger  Kristiansand
+Rainfall       0     1          2          3             4
+Humidity       5     6          7          8             9
+Wind          10    11         12         13            14
+Rainfall  Bergen           0
+          Oslo             1
+          Trondheim        2
+          Stavanger        3
+          Kristiansand     4
+Humidity  Bergen           5
+          Oslo             6
+          Trondheim        7
+          Stavanger        8
+          Kristiansand     9
+Wind      Bergen          10
+          Oslo            11
+          Trondheim       12
+          Stavanger       13
+          Kristiansand    14
+dtype: int64
