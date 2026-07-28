@@ -1,0 +1,363 @@
+import numpy as np
+import pandas as pd
+
+data = np.arange(15, 30).reshape(5, 3)
+dfx = pd.DataFrame(
+    data,
+    index=["apple", "banana", "kiwi", "grapes", "mango"],
+    columns=["store1", "store2", "store3"],
+)
+
+dfx["store4"] = np.nan
+dfx.loc["watermelon"] = np.arange(15, 19)
+dfx.loc["oranges"] = np.nan
+dfx["store5"] = np.nan
+
+dfx["store4"] = dfx["store4"].astype(float)
+dfx.at["apple", "store4"] = 20.0
+
+print("--- Original Dataframe with NaNs ---")
+print(dfx)
+
+print("\n--- 1. dfx.isnull() ---")
+print(dfx.isnull())
+
+print("\n--- 2. dfx.notnull() ---")
+print(dfx.notnull())
+
+print("\n--- 3. Missing values per column ---")
+print(dfx.isnull().sum())
+
+print("\n--- 4. Total missing values in entire dataframe ---")
+print(dfx.isnull().sum().sum())
+
+print("\n--- 5. Count of valid (non-NaN) values per column ---")
+print(dfx.count())
+
+print("\n--- Filtering store4 non-null values using boolean indexing ---")
+print(dfx.store4[dfx.store4.notnull()])
+
+print("\n--- Dropping NaNs from store4 Series ---")
+print(dfx.store4.dropna())
+
+print("\n--- dfx.dropna() (Drops any row containing at least one NaN) ---")
+print(dfx.dropna())
+
+print("\n--- Dropping rows where ALL values are NaN ---")
+print(dfx.dropna(how="all"))
+
+print("\n--- Dropping columns where ALL values are NaN ---")
+print(dfx.dropna(how="all", axis=1))
+
+print("\n--- Keeping columns with at least 5 non-NaN values ---")
+print(dfx.dropna(thresh=5, axis=1))
+
+print("\n--- NumPy vs Pandas Mean with NaN ---")
+ar1 = np.array([100, 200, np.nan, 300])
+ser1 = pd.Series(ar1)
+print(f"NumPy mean (returns NaN): {ar1.mean()}")
+print(f"Pandas mean (ignores NaN): {ser1.mean()}")
+
+print("\n--- Mathematical operations on dfx.store4 ---")
+ser2 = dfx.store4
+print(f"Sum of store4: {ser2.sum()}")
+print(f"Mean of store4: {ser2.mean()}")
+print("\nCumulative sum of store4:")
+print(ser2.cumsum())
+
+print("\n--- Filling all NaNs with 0 ---")
+filledDf = dfx.fillna(0)
+print(filledDf)
+
+print("\n--- Mean comparison: Original vs Filled with 0 ---")
+print("Original dfx.mean():")
+print(dfx.mean(numeric_only=True))
+print("\nFilled filledDf.mean():")
+print(filledDf.mean(numeric_only=True))
+
+print("\n--- Forward filling (ffill) on store4 ---")
+print(dfx.store4.ffill())
+
+print("\n--- Backward filling (bfill) on store4 ---")
+print(dfx.store4.bfill())
+
+
+
+
+
+output
+--- Original Dataframe with NaNs ---
+            store1  store2  store3  store4  store5
+apple         15.0    16.0    17.0    20.0     NaN
+banana        18.0    19.0    20.0     NaN     NaN
+kiwi          21.0    22.0    23.0     NaN     NaN
+grapes        24.0    25.0    26.0     NaN     NaN
+mango         27.0    28.0    29.0     NaN     NaN
+watermelon    15.0    16.0    17.0    18.0     NaN
+oranges        NaN     NaN     NaN     NaN     NaN
+
+--- 1. dfx.isnull() ---
+            store1  store2  store3  store4  store5
+apple        False   False   False   False    True
+banana       False   False   False    True    True
+kiwi         False   False   False    True    True
+grapes       False   False   False    True    True
+mango        False   False   False    True    True
+watermelon   False   False   False   False    True
+oranges       True    True    True    True    True
+
+--- 2. dfx.notnull() ---
+            store1  store2  store3  store4  store5
+apple         True    True    True    True   False
+banana        True    True    True   False   False
+kiwi          True    True    True   False   False
+grapes        True    True    True   False   False
+mango         True    True    True   False   False
+watermelon    True    True    True    True   False
+oranges      False   False   False   False   False
+
+--- 3. Missing values per column ---
+store1    1
+store2    1
+store3    1
+store4    5
+store5    7
+dtype: int64
+
+--- 4. Total missing values in entire dataframe ---
+15
+
+--- 5. Count of valid (non-NaN) values per column ---
+store1    6
+store2    6
+store3    6
+store4    2
+store5    0
+dtype: int64
+
+--- Filtering store4 non-null values using boolean indexing ---
+apple         20.0
+watermelon    18.0
+Name: store4, dtype: float64
+
+--- Dropping NaNs from store4 Series ---
+apple         20.0
+watermelon    18.0
+Name: store4, dtype: float64
+
+--- dfx.dropna() (Drops any row containing at least one NaN) ---
+Empty DataFrame
+Columns: [store1, store2, store3, store4, store5]
+Index: []
+
+--- Dropping rows where ALL values are NaN ---
+            store1  store2  store3  store4  store5
+apple         15.0    16.0    17.0    20.0     NaN
+banana        18.0    19.0    20.0     NaN     NaN
+kiwi          21.0    22.0    23.0     NaN     NaN
+grapes        24.0    25.0    26.0     NaN     NaN
+mango         27.0    28.0    29.0     NaN     NaN
+watermelon    15.0    16.0    17.0    18.0     NaN
+
+--- Dropping columns where ALL values are NaN ---
+            store1  store2  store3  store4
+apple         15.0    16.0    17.0    20.0
+banana        18.0    19.0    20.0     NaN
+kiwi          21.0    22.0    23.0     NaN
+grapes        24.0    25.0    26.0     NaN
+mango         27.0    28.0    29.0     NaN
+watermelon    15.0    16.0    17.0    18.0
+oranges        NaN     NaN     NaN     NaN
+
+--- Keeping columns with at least 5 non-NaN values ---
+            store1  store2  store3
+apple         15.0    16.0    17.0
+banana        18.0    19.0    20.0
+kiwi          21.0    22.0    23.0
+grapes        24.0    25.0    26.0
+mango         27.0    28.0    29.0
+watermelon    15.0    16.0    17.0
+oranges        NaN     NaN     NaN
+
+--- NumPy vs Pandas Mean with NaN ---
+NumPy mean (returns NaN): nan
+Pandas mean (ignores NaN): 200.0
+
+--- Mathematical operations on dfx.store4 ---
+Sum of store4: 38.0
+Mean of store4: 19.0
+
+Cumulative sum of store4:
+apple         20.0
+banana         NaN
+kiwi           NaN
+grapes         NaN
+mango          NaN
+watermelon    38.0
+oranges        NaN
+Name: store4, dtype: float64
+
+--- Filling all NaNs with 0 ---
+            store1  store2  store3  store4  store5
+apple         15.0    16.0    17.0    20.0     0.0
+banana        18.0    19.0    20.0     0.0     0.0
+kiwi          21.0    22.0    23.0     0.0     0.0
+grapes        24.0    25.0    26.0     0.0     0.0
+mango         27.0    28.0    29.0     0.0     0.0
+watermelon    15.0    16.0    17.0    18.0     0.0
+oranges        0.0     0.0     0.0     0.0     0.0
+
+--- Mean comparison: Original vs Filled with 0 ---
+Original dfx.mean():
+store1    20.0
+store2    21.0
+store3    22.0
+store4    19.0
+store5     NaN
+dtype: float64
+
+Filled filledDf.mean():
+store1    17.142857
+store2    18.000000
+store3    18.857143
+store4     5.428571
+store5     0.000000
+dtype: float64
+
+--- Forward filling (ffill) on store4 ---
+apple         20.0
+banana        20.0
+kiwi          20.0
+grapes        20.0
+mango         20.0
+watermelon    18.0
+oranges       18.0
+Name: store4, dtype: float64
+
+--- Backward filling (bfill) on store4 ---
+apple         20.0
+banana        18.0
+kiwi          18.0
+grapes        18.0
+mango         18.0
+watermelon    18.0
+oranges        NaN
+Name: store4, dtype: float64
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import numpy as np
+import pandas as pd
+from sklearn.experimental import enable_iterative_imputer  # Explicitly required for MICE
+from sklearn.impute import IterativeImputer, SimpleImputer
+
+# 1. CREATE SAMPLE DATA
+# Setting up a dataset with numerical and categorical missing values
+np.random.seed(42)
+raw_data = {
+    "Age": [25, 30, np.nan, 45, 22, 35, np.nan, 50],
+    "Salary": [50000, 60000, 55000, np.nan, 40000, np.nan, 62000, 85000],
+    "Experience": [2, 5, 3, 15, np.nan, 7, 6, np.nan],
+    "Category": ["A", "B", "A", np.nan, "B", "B", np.nan, "A"],
+}
+df = pd.DataFrame(raw_data)
+
+print("--- Original DataFrame with Missing Values ---")
+print(df)
+print("\n" + "=" * 50 + "\n")
+
+# 2. UNIVARIATE IMPUTATION (NUMERICAL)
+print("--- 1 & 2. Mean and Median Imputation ---")
+mean_imputer = SimpleImputer(strategy="mean")
+median_imputer = SimpleImputer(strategy="median")
+
+df["Age_Mean"] = mean_imputer.fit_transform(df[["Age"]]).ravel()
+df["Salary_Median"] = median_imputer.fit_transform(df[["Salary"]]).ravel()
+
+
+# 3. MODE IMPUTATION (CATEGORICAL)
+print("--- 3. Mode Imputation (Fixed ValueError: 2) ---")
+mode_imputer = SimpleImputer(strategy="most_frequent")
+
+# .ravel() flattens the 2D array output into 1D to prevent dimension errors
+df["Category_Mode"] = mode_imputer.fit_transform(df[["Category"]]).ravel()
+
+
+# 4. MICE IMPUTATION (MULTIVARIATE IMPUTATION BY CHAINED EQUATIONS)
+print("--- 4. MICE Imputation ---")
+# Select multiple numeric columns for MICE to find cross-column patterns
+mice_cols = ["Age", "Salary", "Experience"]
+
+mice_imputer = IterativeImputer(max_iter=10, random_state=42)
+
+# MICE outputs a full 2D array matching the shape of input columns
+mice_array = mice_imputer.fit_transform(df[mice_cols])
+
+# Re-assign the completed arrays back into the DataFrame
+df[[f"{col}_MICE" for col in mice_cols]] = mice_array
+
+
+# DISPLAY THE FINAL CLEANED DATAFRAME
+print("\n--- Final Consolidated DataFrame ---")
+pd.set_option("display.max_columns", None)
+pd.set_option("display.width", 1000)
+print(df)
+
+
+
+
+output
+--- Original DataFrame with Missing Values ---
+    Age   Salary  Experience Category
+0  25.0  50000.0         2.0        A
+1  30.0  60000.0         5.0        B
+2   NaN  55000.0         3.0        A
+3  45.0      NaN        15.0      NaN
+4  22.0  40000.0         NaN        B
+5  35.0      NaN         7.0        B
+6   NaN  62000.0         6.0      NaN
+7  50.0  85000.0         NaN        A
+
+==================================================
+
+--- 1 & 2. Mean and Median Imputation ---
+--- 3. Mode Imputation (Fixed ValueError: 2) ---
+--- 4. MICE Imputation ---
+
+--- Final Consolidated DataFrame ---
+    Age   Salary  Experience Category  Age_Mean  Salary_Median Category_Mode   Age_MICE   Salary_MICE  Experience_MICE
+0  25.0  50000.0         2.0        A      25.0        50000.0             A  25.000000  50000.000000         2.000000
+1  30.0  60000.0         5.0        B      30.0        60000.0             B  30.000000  60000.000000         5.000000
+2   NaN  55000.0         3.0        A      34.5        55000.0             A  29.185020  55000.000000         3.000000
+3  45.0      NaN        15.0      NaN      45.0        57500.0             A  45.000000  83168.812777        15.000000
+4  22.0  40000.0         NaN        B      22.0        40000.0             B  22.000000  40000.000000        -2.732392
+5  35.0      NaN         7.0        B      35.0        57500.0             B  35.000000  64062.596865         7.000000
+6   NaN  62000.0         6.0      NaN      34.5        62000.0             A  33.483685  62000.000000         6.000000
+7  50.0  85000.0         NaN        A      50.0        85000.0             A  50.000000  85000.000000        15.502857
+/usr/local/lib/python3.12/dist-packages/sklearn/impute/_iterative.py:895: ConvergenceWarning: [IterativeImputer] Early stopping criterion not reached.
+  warnings.warn(
